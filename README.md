@@ -1,4 +1,4 @@
-**DB S3 Backup** is a Python Command Line Tool that makes database (MySQL, SQLite) backups easy and efficient by using Amazon S3 storage.
+**DB S3 Backup** is a Python Command Line Tool that makes database (MySQL, SQLite, PostgreSQL) backups easy and efficient by using Amazon S3 storage.
 The more recent backups are, the highest frequency they will be kept.
 
 It currently supports databases:
@@ -15,7 +15,15 @@ This is a very simple quick start guide, to make you backup easily your MySQL or
 
 ### Clone this repo into your server
 
-```git clone https://github.com/mittsh/db-s3-backup```
+```
+$ git clone https://github.com/mittsh/db-s3-backup
+```
+
+### Install dependencies
+
+```
+pip install -r requirements.txt
+```
 
 ### Create a JSON file to setup your backup configuration
 
