@@ -218,7 +218,7 @@ if __name__ == '__main__':
             sqlite_dump = SQLiteDump()
             sqlite_dump.dump(config['database'], s3_bucket, filename, filepath, verbose=args.verbose,
                              upload_callback=upload_dump_s3)
-        elif config['database']['ENGINE'] == 'sqlite':
+        elif config['database']['ENGINE'] == 'postgresql':
             postgresql_dump = PostgreSQLDump()
             postgresql_dump.dump(config['database'], s3_bucket, filename,
                                  filepath, verbose=args.verbose,
