@@ -6,9 +6,10 @@ import random, string
 import os
 import re
 
-from db_s3_backup.db_interface.mysql_dump import MySQLDump
-from db_s3_backup.db_interface.sqlite_dump import SQLiteDump
-from db_s3_backup.db_interface.postgresql_dump import PostgreSQLDump
+from db_s3_backup.db_interface.mysql import MySQLDump
+from db_s3_backup.db_interface.sqlite import SQLiteDump
+from db_s3_backup.db_interface.postgresql import PostgreSQLDump
+from db_s3_backup.db_interface.mongodb import MongoDBDump
 
 intervals = [
     # For 2 days, 1 backup per 1 hour
@@ -186,6 +187,10 @@ if __name__ == '__main__':
         backup_prefix = 'postgresql_backup_{database}'.format(
             database=config['database']['NAME'])
         backup_extension = 'postgresql'
+    elif config['database']['ENGINE'] == 'mongodb':
+        backup_prefix = 'mongodb_backup_{database}'.format(
+            database=config['database']['NAME'])
+        backup_extension = 'mongodb'
     else:
         print('Invalid database engine:', config['database']['ENGINE'])
         exit(3)
@@ -211,6 +216,11 @@ if __name__ == '__main__':
             postgresql_dump.dump(config['database'], s3_bucket, filename,
                                  filepath, verbose=args.verbose,
                                  upload_callback=upload_dump_s3)
+        elif config['database']['ENGINE'] == 'mongodb':
+            mongo_dump = MongoDBDump()
+            mongo_dump.dump(config['database'], s3_bucket, filename,
+                            filepath, verbose=args.verbose,
+                            upload_callback=upload_dump_s3)
 
     if args.delete_remote:
         cleanup_old_backups(backup_prefix, backup_extension,

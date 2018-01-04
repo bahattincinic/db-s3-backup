@@ -1,19 +1,25 @@
 import subprocess
 
-from .dump_protocol import DumpProtocol
+from .base import BaseDump
 
 
-class MySQLDump(DumpProtocol):
+class MongoDBDump(BaseDump):
 
-    def dump(self, config, s3_bucket, s3_bucket_key_name, filepath, verbose=False, upload_callback=None):
-        sqldump_cmd = ['mysqldump', config['NAME'], '-h', config['HOST'], '-P', config['PORT'], '-u', config['USER'],
-                       '-p{password}'.format(password=config['PASSWORD'])]
+    def dump(self, config, s3_bucket, s3_bucket_key_name, filepath,
+             verbose=False, upload_callback=None):
+        sqldump_cmd = [
+            'mongodump',
+            '--db', config['NAME'],
+            '--host', config['HOST'],
+            '--port', config['PORT'],
+            '--username', config['USER'],
+            '--password', config['PASSWORD'],
+        ]
         proc = subprocess.Popen(sqldump_cmd, stdout=subprocess.PIPE)
 
         if verbose:
-            print(
-                'Dumping MySQL database: {database} to file {filepath}'.format(database=config['NAME'],
-                                                                               filepath=filepath))
+            print('Dumping MondoDB database: {database} to file {filepath}'.format(
+                database=config['NAME'], filepath=filepath))
 
         with open(filepath, 'w+') as f:
             while True:
