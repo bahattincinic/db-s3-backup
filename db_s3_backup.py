@@ -26,8 +26,6 @@ intervals = [
 filename_regex = re.compile(r'(.*?)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(.*?)\.(\w+)')
 
 
-# Connect to Amazon S3
-
 def connect_to_s3(aws_config, verbose=False):
     if verbose:
         print('Connecting to Amazon S3')
@@ -42,10 +40,6 @@ def connect_to_s3(aws_config, verbose=False):
     return (s3_connection, s3_bucket,)
 
 
-#
-# Upload dump to Amazon S3
-#
-
 def upload_dump_s3(f, s3_bucket, s3_bucket_key_name, verbose=False):
     s3_file = Key(s3_bucket, name='dumps/' + s3_bucket_key_name)
 
@@ -58,10 +52,6 @@ def upload_dump_s3(f, s3_bucket, s3_bucket_key_name, verbose=False):
     if verbose:
         print('+ Upload finished')
 
-
-#
-# Cleanup old S3 backups
-#
 
 def cleanup_old_backups(backup_prefix, backup_extension, intervals, s3_bucket, verbose=False, action=True):
     backups = []
@@ -101,17 +91,12 @@ def cleanup_old_backups(backup_prefix, backup_extension, intervals, s3_bucket, v
             if verbose:
                 print('+ Keep {key}'.format(key=key.name))
             oldest_age = age
-        # Delete backup
         else:
             if verbose:
                 print('- Delete {key}'.format(key=key.name))
             if action:
                 key.delete()
 
-
-#
-# Delete local backups
-#
 
 def delete_local_backups(dir_path, backup_prefix, backup_extension, verbose=False, action=True):
     files = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
@@ -125,10 +110,6 @@ def delete_local_backups(dir_path, backup_prefix, backup_extension, verbose=Fals
             if action:
                 os.remove(filepath)
 
-
-#
-# Run as Main + Option Parser
-#
 
 if __name__ == '__main__':
     import argparse, json
@@ -209,13 +190,10 @@ if __name__ == '__main__':
         print('Invalid database engine:', config['database']['ENGINE'])
         exit(3)
 
-    # Generate name/path/now
     filename = '{backup_prefix}_{datetime:%Y}_{datetime:%m}_{datetime:%d}_{datetime:%H}_{datetime:%M}_{datetime:%S}_{random}.{backup_extension}'.format(
         datetime=datetime.now(), backup_prefix=backup_prefix, backup_extension=backup_extension,
         random=''.join([random.choice(string.letters + string.digits) for x in range(5)]))
     filepath = os.path.join(args.backup_directory, filename)
-
-    # Run scripts...
 
     (s3_connection, s3_bucket,) = connect_to_s3(config['aws'], verbose=args.verbose)
 
