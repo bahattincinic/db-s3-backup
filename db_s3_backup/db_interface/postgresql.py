@@ -12,8 +12,8 @@ class PostgreSQLDump(BaseDump):
             '-d', config['NAME'],
             '-h', config['HOST'],
             '-p', config['PORT'],
-            '-u', config['USER'],
-            '> ', filepath
+            '-U', config['USER'],
+            '--file=%s' % filepath
         ]
 
         if verbose:

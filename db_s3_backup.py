@@ -189,15 +189,15 @@ if __name__ == '__main__':
         backup_extension = 'sql'
     elif config['database']['ENGINE'] == 'sqlite':
         backup_prefix = 'sqlite_backup'
-        backup_extension = 'sqlite'
+        backup_extension = 'sql'
     elif config['database']['ENGINE'] == 'postgresql':
         backup_prefix = 'postgresql_backup_{database}'.format(
             database=config['database']['NAME'])
-        backup_extension = 'postgresql'
+        backup_extension = 'sql'
     elif config['database']['ENGINE'] == 'mongodb':
         backup_prefix = 'mongodb_backup_{database}'.format(
             database=config['database']['NAME'])
-        backup_extension = 'mongodb'
+        backup_extension = 'json'
     else:
         print('Invalid database engine:', config['database']['ENGINE'])
         exit(3)
