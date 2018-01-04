@@ -8,6 +8,7 @@ import re
 
 from db_s3_backup.db_interface.mysql_dump import MySQLDump
 from db_s3_backup.db_interface.sqlite_dump import SQLiteDump
+from db_s3_backup.db_interface.postgresql_dump import PostgreSQLDump
 
 intervals = [
 	# For 2 days, 1 backup per 1 hour
@@ -189,11 +190,16 @@ if __name__ == '__main__':
 
 	# Generate backup_prefix, backup_extension and choose database
 	if config['database']['ENGINE'] == 'mysql':
-		backup_prefix = 'mysqldump_{database}'.format(database=config['database']['NAME'])
+		backup_prefix = 'mysqldump_{database}'.format(
+			database=config['database']['NAME'])
 		backup_extension = 'sql'
 	elif config['database']['ENGINE'] == 'sqlite':
 		backup_prefix = 'sqlite_backup'
 		backup_extension = 'sqlite'
+	elif config['database']['ENGINE'] == 'postgresql':
+		backup_prefix = 'postgresql_backup_{database}'.format(
+			database=config['database']['NAME'])
+		backup_extension = 'postgresql'
 	else:
 		print('Invalid database engine:', config['database']['ENGINE'])
 		exit(3)
@@ -213,9 +219,19 @@ if __name__ == '__main__':
 		elif config['database']['ENGINE'] == 'sqlite':
 			sqlite_dump = SQLiteDump()
 			sqlite_dump.dump(config['database'], s3_bucket, filename, filepath, verbose=args.verbose, upload_callback=upload_dump_s3)
+		elif config['database']['ENGINE'] == 'sqlite':
+			postgresql_dump = PostgreSQLDump()
+			postgresql_dump.dump(config['database'], s3_bucket, filename,
+								 filepath, verbose=args.verbose,
+								 upload_callback=upload_dump_s3)
 
 	if args.delete_remote:
-		cleanup_old_backups(backup_prefix, backup_extension, intervals, s3_bucket, verbose=args.verbose, action = (not args.simulate_delete))
+		cleanup_old_backups(backup_prefix, backup_extension,
+							intervals, s3_bucket,
+							verbose=args.verbose,
+							action=(not args.simulate_delete))
 
 	if args.delete_local:
-		delete_local_backups(args.backup_directory, backup_prefix, backup_extension, verbose = args.verbose, action = (not args.simulate_delete))
+		delete_local_backups(args.backup_directory, backup_prefix,
+							 backup_extension, verbose=args.verbose,
+							 action=(not args.simulate_delete))

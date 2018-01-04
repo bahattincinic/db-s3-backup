@@ -5,6 +5,7 @@ It currently supports databases:
 
 - MySQL
 - SQLite
+- PostgreSQL
 
 But feel free to fork and add more!
 
@@ -34,6 +35,26 @@ This is a very simple quick start guide, to make you backup easily your MySQL or
 		"PASSWORD": "password",
 		"HOST":"mysql-host",
 		"PORT":"3306"
+	}
+}
+```
+
+#### PostgreSQL Configuration
+ 
+```json
+{
+	"aws":{
+		"AWS_ACCESS_KEY_ID":"_MY_KEY_",
+		"AWS_SECRET_ACCESS_KEY":"_MY_SECRET_KEY",
+		"AWS_STORAGE_BUCKET_NAME":"my-bucket"
+	},
+	"postgresql":{
+		"ENGINE":"postgresql",
+		"NAME":"database",
+		"USER":"username",
+		"PASSWORD": "password",
+		"HOST":"postgres-host",
+		"PORT":"5432"
 	}
 }
 ```
