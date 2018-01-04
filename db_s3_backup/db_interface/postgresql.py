@@ -8,7 +8,6 @@ class PostgreSQLDump(BaseDump):
     def dump(self, config, s3_bucket, s3_bucket_key_name, filepath,
              verbose=False, upload_callback=None):
         sqldump_cmd = [
-            'PGPASSWORD="%s"' % config['PASSWORD'],
             'pg_dump',
             '-d', config['NAME'],
             '-h', config['HOST'],
@@ -22,7 +21,7 @@ class PostgreSQLDump(BaseDump):
                 database=config['NAME'], filepath=filepath))
 
         process = subprocess.Popen(sqldump_cmd, stdout=subprocess.PIPE)
-        process.communicate()
+        process.communicate('{}\n'.format(config['PASSWORD']))
 
         if upload_callback is not None:
             with open(filepath, 'w+') as f:
