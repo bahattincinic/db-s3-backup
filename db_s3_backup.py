@@ -132,7 +132,7 @@ if __name__ == '__main__':
         help='Backup JSON configuration file.',
     )
     parser.add_argument(
-        '-c'
+        '-c',
         '--create_dump',
         action='store_true',
         dest='create_dump',
