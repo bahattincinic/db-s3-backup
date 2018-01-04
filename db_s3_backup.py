@@ -1,6 +1,8 @@
-import subprocess
-from boto.s3.connection import S3Connection
+import boto
 from boto.s3.key import Key
+import boto.s3.connection
+from boto.s3.key import Key
+
 from datetime import datetime, timedelta
 import random, string
 import os
@@ -31,14 +33,19 @@ def connect_to_s3(aws_config, verbose=False):
     if verbose:
         print('Connecting to Amazon S3')
 
-    s3_connection = S3Connection(aws_access_key_id=aws_config['AWS_ACCESS_KEY_ID'],
-                                 aws_secret_access_key=aws_config['AWS_SECRET_ACCESS_KEY'])
-    s3_bucket = s3_connection.get_bucket(aws_config['AWS_STORAGE_BUCKET_NAME'])
+        connection = boto.s3.connect_to_region(
+            aws_config['AWS_REGION'],
+            aws_access_key_id=aws_config['AWS_ACCESS_KEY_ID'],
+            aws_secret_access_key=aws_config['AWS_SECRET_ACCESS_KEY'],
+            is_secure=True,
+            calling_format=boto.s3.connection.OrdinaryCallingFormat(),
+        )
+        bucket = connection.get_bucket(aws_config['AWS_STORAGE_BUCKET_NAME'])
 
     if verbose:
         print('+ Connected')
 
-    return (s3_connection, s3_bucket,)
+    return connection, bucket
 
 
 def upload_dump_s3(f, s3_bucket, s3_bucket_key_name, verbose=False):
@@ -200,7 +207,7 @@ if __name__ == '__main__':
         random=''.join([random.choice(string.ascii_lowercase + string.digits) for x in range(5)]))
     filepath = os.path.join(args.backup_directory, filename)
 
-    (s3_connection, s3_bucket,) = connect_to_s3(config['aws'], verbose=args.verbose)
+    s3_connection, s3_bucket = connect_to_s3(config['aws'], verbose=args.verbose)
 
     if args.create_dump:
         if config['database']['ENGINE'] == 'mysql':

@@ -35,7 +35,8 @@ pip install -r requirements.txt
 	"aws":{
 		"AWS_ACCESS_KEY_ID":"_MY_KEY_",
 		"AWS_SECRET_ACCESS_KEY":"_MY_SECRET_KEY",
-		"AWS_STORAGE_BUCKET_NAME":"my-bucket"
+		"AWS_STORAGE_BUCKET_NAME":"my-bucket",
+		"AWS_REGION": "eu-central-1"
 	},
 	"database":{
 		"ENGINE":"mysql",
@@ -55,7 +56,8 @@ pip install -r requirements.txt
 	"aws":{
 		"AWS_ACCESS_KEY_ID":"_MY_KEY_",
 		"AWS_SECRET_ACCESS_KEY":"_MY_SECRET_KEY",
-		"AWS_STORAGE_BUCKET_NAME":"my-bucket"
+		"AWS_STORAGE_BUCKET_NAME":"my-bucket",
+		"AWS_REGION": "eu-central-1"
 	},
 	"postgresql":{
 		"ENGINE":"postgresql",
@@ -75,7 +77,8 @@ pip install -r requirements.txt
 	"aws":{
 		"AWS_ACCESS_KEY_ID":"_MY_KEY_",
 		"AWS_SECRET_ACCESS_KEY":"_MY_SECRET_KEY",
-		"AWS_STORAGE_BUCKET_NAME":"my-bucket"
+		"AWS_STORAGE_BUCKET_NAME":"my-bucket",
+		"AWS_REGION": "eu-central-1"
 	},
 	"postgresql":{
 		"ENGINE":"mongodb",
@@ -95,7 +98,8 @@ pip install -r requirements.txt
 	"aws":{
 		"AWS_ACCESS_KEY_ID":"_MY_KEY_",
 		"AWS_SECRET_ACCESS_KEY":"_MY_SECRET_KEY",
-		"AWS_STORAGE_BUCKET_NAME":"my-bucket"
+		"AWS_STORAGE_BUCKET_NAME":"my-bucket",
+		"AWS_REGION": "eu-central-1"
 	},
 	"database":{
 		"ENGINE":"sqlite",
