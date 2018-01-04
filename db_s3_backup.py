@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     filename = '{backup_prefix}_{datetime:%Y}_{datetime:%m}_{datetime:%d}_{datetime:%H}_{datetime:%M}_{datetime:%S}_{random}.{backup_extension}'.format(
         datetime=datetime.now(), backup_prefix=backup_prefix, backup_extension=backup_extension,
-        random=''.join([random.choice(string.letters + string.digits) for x in range(5)]))
+        random=''.join([random.choice(string.ascii_lowercase + string.digits) for x in range(5)]))
     filepath = os.path.join(args.backup_directory, filename)
 
     (s3_connection, s3_bucket,) = connect_to_s3(config['aws'], verbose=args.verbose)
