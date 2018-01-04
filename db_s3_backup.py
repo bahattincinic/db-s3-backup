@@ -75,7 +75,7 @@ def cleanup_old_backups(backup_prefix, backup_extension, intervals, s3_bucket, v
 
             backups.append((key, now - d))
 
-    backups.sort(key=lambda (key, age, ): age, reverse=False)
+    backups.sort(key=lambda key, age: age, reverse=False)
 
     if verbose:
         print('Found {count} backups on Amazon S3'.format(count=len(backups)))

@@ -1,6 +1,3 @@
-from exceptions import ValueError
-
-
 class DumpProtocol(object):
 
     def dump(self, config, s3_bucket, s3_bucket_key_name,
