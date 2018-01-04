@@ -1,5 +1,7 @@
 from exceptions import ValueError
-class DumpProtocol:
 
-    def dump(self, config=None, verbose=False):
+
+class DumpProtocol(object):
+
+    def dump(self, config, s3_bucket, s3_bucket_key_name, filepath, verbose=False, upload_callback=None):
         raise ValueError('DumpProtocol not followed')
