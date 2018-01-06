@@ -19,7 +19,7 @@ class MySQLDump(BaseDump):
             while True:
                 buf = proc.stdout.read(4096 * 1024)  # Read 4 MB
                 if buf != '':
-                    f.write(buf)
+                    f.write(buf.decode("utf-8"))
                     if verbose:
                         print('- Written 4 MB')
                 else:
