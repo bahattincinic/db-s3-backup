@@ -15,14 +15,14 @@ class MongoDBDump(BaseDump):
         folder_path = self.get_folder_name(filepath)
         sqldump_cmd = [
             'mongodump',
-            '--db', config['NAME'],
-            ('--host', config['HOST']) if config.get('HOST') else '',
-            ('--port', config['PORT']) if config.get('PORT') else '',
-            ('--username', config['USER']) if config.get('USERNAME') else '',
-            ('--password', config['PASSWORD']) if config.get('PASSWORD') else '',
+            '-d', config['NAME'],
+            ('-host', config['HOST']) if config.get('HOST') else '',
+            ('-port', config['PORT']) if config.get('PORT') else '',
+            ('-u', config['USER']) if config.get('USERNAME') else '',
+            ('--port', config['PASSWORD']) if config.get('PASSWORD') else '',
             '-o %s' % folder_path
         ]
-        subprocess.call(sqldump_cmd, stdout=subprocess.PIPE)
+        subprocess.check_output(sqldump_cmd)
 
         if verbose:
             print('Dumping MondoDB database: {database} to file {filepath}'.format(
