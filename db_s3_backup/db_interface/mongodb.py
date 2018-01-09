@@ -22,7 +22,9 @@ class MongoDBDump(BaseDump):
             ('--port', config['PASSWORD']) if config.get('PASSWORD') else '',
             '-o %s' % folder_path
         ]
-        subprocess.check_output(sqldump_cmd)
+        process = subprocess.Popen(
+            sqldump_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.communicate()
 
         if verbose:
             print('Dumping MondoDB database: {database} to file {filepath}'.format(
