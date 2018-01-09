@@ -1,4 +1,6 @@
 import subprocess
+import tarfile
+import os
 
 from .base import BaseDump
 
