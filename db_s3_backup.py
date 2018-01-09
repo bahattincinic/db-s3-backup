@@ -197,7 +197,7 @@ if __name__ == '__main__':
     elif config['database']['ENGINE'] == 'mongodb':
         backup_prefix = 'mongodb_backup_{database}'.format(
             database=config['database']['NAME'])
-        backup_extension = 'json'
+        backup_extension = 'gz'
     else:
         print('Invalid database engine:', config['database']['ENGINE'])
         exit(3)
