@@ -1,14 +1,16 @@
-import subprocess
-from boto.s3.connection import S3Connection
+import boto
 from boto.s3.key import Key
+import boto.s3.connection
+from boto.s3.key import Key
+
 from datetime import datetime, timedelta
 import random, string
 import os
 import re
 
-from db_s3_backup.db_interface.mysql_dump import MySQLDump
-from db_s3_backup.db_interface.sqlite_dump import SQLiteDump
-from db_s3_backup.db_interface.postgresql_dump import PostgreSQLDump
+from db_s3_backup.db_interface.mysql import MySQLDump
+from db_s3_backup.db_interface.sqlite import SQLiteDump
+from db_s3_backup.db_interface.postgresql import PostgreSQLDump
 
 intervals = [
     # For 2 days, 1 backup per 1 hour
@@ -30,14 +32,19 @@ def connect_to_s3(aws_config, verbose=False):
     if verbose:
         print('Connecting to Amazon S3')
 
-    s3_connection = S3Connection(aws_access_key_id=aws_config['AWS_ACCESS_KEY_ID'],
-                                 aws_secret_access_key=aws_config['AWS_SECRET_ACCESS_KEY'])
-    s3_bucket = s3_connection.get_bucket(aws_config['AWS_STORAGE_BUCKET_NAME'])
+        connection = boto.s3.connect_to_region(
+            aws_config['AWS_REGION'],
+            aws_access_key_id=aws_config['AWS_ACCESS_KEY_ID'],
+            aws_secret_access_key=aws_config['AWS_SECRET_ACCESS_KEY'],
+            is_secure=True,
+            calling_format=boto.s3.connection.OrdinaryCallingFormat(),
+        )
+        bucket = connection.get_bucket(aws_config['AWS_STORAGE_BUCKET_NAME'])
 
     if verbose:
         print('+ Connected')
 
-    return (s3_connection, s3_bucket,)
+    return connection, bucket
 
 
 def upload_dump_s3(f, s3_bucket, s3_bucket_key_name, verbose=False):
@@ -46,7 +53,10 @@ def upload_dump_s3(f, s3_bucket, s3_bucket_key_name, verbose=False):
     if verbose:
         print('Uploading dump to Amazon S3: {url}'.format(url=s3_file.generate_url(expires_in=0, query_auth=False)))
 
-    f.seek(0)
+    if hasattr(f, 'seek'):
+        # TarFile doesn't have a seek function.
+        f.seek(0)
+
     s3_file.set_contents_from_file(f)
 
     if verbose:
@@ -124,7 +134,7 @@ if __name__ == '__main__':
         help='Backup JSON configuration file.',
     )
     parser.add_argument(
-        '-c'
+        '-c',
         '--create_dump',
         action='store_true',
         dest='create_dump',
@@ -181,21 +191,21 @@ if __name__ == '__main__':
         backup_extension = 'sql'
     elif config['database']['ENGINE'] == 'sqlite':
         backup_prefix = 'sqlite_backup'
-        backup_extension = 'sqlite'
+        backup_extension = 'sql'
     elif config['database']['ENGINE'] == 'postgresql':
         backup_prefix = 'postgresql_backup_{database}'.format(
             database=config['database']['NAME'])
-        backup_extension = 'postgresql'
+        backup_extension = 'sql'
     else:
         print('Invalid database engine:', config['database']['ENGINE'])
         exit(3)
 
     filename = '{backup_prefix}_{datetime:%Y}_{datetime:%m}_{datetime:%d}_{datetime:%H}_{datetime:%M}_{datetime:%S}_{random}.{backup_extension}'.format(
         datetime=datetime.now(), backup_prefix=backup_prefix, backup_extension=backup_extension,
-        random=''.join([random.choice(string.letters + string.digits) for x in range(5)]))
+        random=''.join([random.choice(string.ascii_lowercase + string.digits) for x in range(5)]))
     filepath = os.path.join(args.backup_directory, filename)
 
-    (s3_connection, s3_bucket,) = connect_to_s3(config['aws'], verbose=args.verbose)
+    s3_connection, s3_bucket = connect_to_s3(config['aws'], verbose=args.verbose)
 
     if args.create_dump:
         if config['database']['ENGINE'] == 'mysql':
@@ -206,7 +216,7 @@ if __name__ == '__main__':
             sqlite_dump = SQLiteDump()
             sqlite_dump.dump(config['database'], s3_bucket, filename, filepath, verbose=args.verbose,
                              upload_callback=upload_dump_s3)
-        elif config['database']['ENGINE'] == 'sqlite':
+        elif config['database']['ENGINE'] == 'postgresql':
             postgresql_dump = PostgreSQLDump()
             postgresql_dump.dump(config['database'], s3_bucket, filename,
                                  filepath, verbose=args.verbose,

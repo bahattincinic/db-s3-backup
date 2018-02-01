@@ -1,4 +1,4 @@
-class DumpProtocol(object):
+class BaseDump(object):
 
     def dump(self, config, s3_bucket, s3_bucket_key_name,
              filepath, verbose=False, upload_callback=None):
